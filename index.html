@@ -103,6 +103,13 @@
   .modal h2{margin:0 0 8px;color:#17233b}
   .modal p{margin:8px 0;color:#59677f;line-height:1.55}
   .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+
+  .preview-wrap{max-width:1000px;margin:26px auto;padding:0 18px}
+  .preview-title{font-size:24px;font-weight:900;color:#16233d;margin-bottom:6px}.preview-sub{color:#7a879d;margin-bottom:18px}
+  .preview-card{background:#fff;border:1px solid #d9dfeb;border-radius:15px;padding:18px;margin-bottom:14px;box-shadow:0 8px 22px rgba(24,39,72,.06)}
+  .preview-q{font-weight:900;color:#1d2c47;margin-bottom:7px}.preview-en{font-size:16px;font-weight:750;line-height:1.5;color:#1c2940}.preview-hi{font-size:15px;font-weight:650;line-height:1.5;color:#52617a;margin-top:6px}
+  .preview-options{display:grid;gap:7px;margin-top:10px}.preview-option{padding:9px 10px;border:1px solid #e4e8ef;border-radius:9px;color:#37445a;background:#fbfcfe}.preview-option.correct-answer{border-color:#80c9aa;background:#effaf5}.preview-option.selected-wrong{border-color:#e6a0aa;background:#fff2f4}.preview-option.selected{border-color:#80c9aa;background:#effaf5}
+  .ans-line{margin-top:12px;padding:11px 12px;border-radius:10px;font-size:14px;line-height:1.45}.ans-line.correct{background:#e9f8f1;border:1px solid #9edfc3;color:#176044}.ans-line.wrong{background:#fff0f2;border:1px solid #efadb7;color:#9f2635}.ans-line.skipped{background:#f5f7fa;border:1px solid #dfe5ed;color:#68758a}
   .hidden{display:none!important}
   .start-card{max-width:760px;margin:40px auto;padding:30px;background:#fff;border-radius:18px;border:1px solid #d9dfeb;box-shadow:0 14px 40px rgba(24,39,72,.08)}
   .start-card h1{margin:0;color:#16233d;font-size:30px}
@@ -168,7 +175,7 @@ const QUESTIONS = [
   {
     en:"If a uniform wire of resistance 16 Ω is cut into four equal parts and attached in parallel combination, the equivalent resistance of the combination is",
     hi:"16 Ω प्रतिरोध वाले एक समरूप तार को चार बराबर टुकड़ों में काटकर इन्हें समानान्तर क्रम में जोड़ दिया जाए तो संयोजन का समतुल्य प्रतिरोध होगा।",
-    options:["1 Ω","4 Ω","1/4 Ω","1/16 Ω"], answer:2
+    options:["1 Ω","4 Ω","1/4 Ω","1/16 Ω"], answer:1
   },
   {
     en:"Drift velocity Vd varies with the intensity of electric field E as per the relation",
@@ -203,7 +210,7 @@ const QUESTIONS = [
   {
     en:"A charged particle has drift velocity 4.2 × 10⁻⁴ m s⁻¹ in electric field of 2.1 × 10⁻¹⁰ V m⁻¹. Its mobility is",
     hi:"विद्युत क्षेत्र 2.1 × 10⁻¹⁰ V m⁻¹ में एक आवेशित कण का अपवाह वेग 4.2 × 10⁻⁴ m s⁻¹ है। कण की गतिशीलता का मान है।",
-    options:["0.5 × 10⁶ m²V⁻¹s⁻¹","2 × 10⁶ m²V⁻¹s⁻¹","0.5 × 10⁻⁶ m²V⁻¹s⁻¹","2 × 10⁻⁶ m²V⁻¹s⁻¹"], answer:1
+    options:["0.5 × 10⁶ m²V⁻¹s⁻¹","2 × 10⁶ m²V⁻¹s⁻¹","0.5 × 10⁻⁶ m²V⁻¹s⁻¹","2 × 10⁻⁶ m²V⁻¹s⁻¹"], answer:2
   },
   {
     en:"Ohm's law is valid when the temperature of conductor is",
@@ -393,8 +400,7 @@ submitTop.onclick=()=>{
 
 function showResult(auto=false){
   if(submitted) return;
-  submitted=true;
-  clearInterval(timerHandle);
+  submitted=true; clearInterval(timerHandle);
   const attempted=answers.filter(x=>x!==null).length;
   const correct=answers.reduce((n,a,i)=>n+(a===QUESTIONS[i].answer?1:0),0);
   const wrong=answers.reduce((n,a,i)=>n+(a!==null && a!==QUESTIONS[i].answer?1:0),0);
@@ -402,32 +408,52 @@ function showResult(auto=false){
   const score=correct-(wrong*NEGATIVE);
   const pct=Math.max(0,(score/QUESTIONS.length)*100);
   const timeTaken=Math.min(EXAM_SECONDS,EXAM_SECONDS-remaining);
-  submitTop.style.display="none";
-  document.querySelector(".timer").innerHTML=`<div class="timer-value">00:00</div>`;
+  submitTop.style.display='none';
+  document.querySelector('.timer').innerHTML='<div class="timer-value">00:00</div>';
   main.innerHTML=`
     <section class="result">
-      <h1>Test Result</h1>
-      <div style="color:#7a879d;margin-top:6px">AIIMERS CLASSES • Dir:- KIRTAN BAURI</div>
+      <h1>Test Result</h1><div style="color:#7a879d;margin-top:6px">AIIMERS CLASSES • Dir:- KIRTAN BAURI</div>
       <div class="score"><div>${auto?'Time Over':'Test Submitted'}</div><strong>${score.toFixed(2)}</strong></div>
       <div class="result-grid">
-        <div class="result-card"><b>${attempted}</b><span>Attempted</span></div>
-        <div class="result-card"><b>${correct}</b><span>Correct</span></div>
-        <div class="result-card"><b>${wrong}</b><span>Wrong</span></div>
-        <div class="result-card"><b>${skipped}</b><span>Unattempted</span></div>
+        <div class="result-card"><b>${attempted}</b><span>Attempted</span></div><div class="result-card"><b>${correct}</b><span>Correct</span></div><div class="result-card"><b>${wrong}</b><span>Wrong</span></div><div class="result-card"><b>${skipped}</b><span>Unattempted</span></div>
       </div>
       <div class="result-grid" style="margin-top:12px">
-        <div class="result-card"><b>${pct.toFixed(1)}%</b><span>Percentage</span></div>
-        <div class="result-card"><b>${formatTime(timeTaken)}</b><span>Time Used</span></div>
-        <div class="result-card"><b>−0.25</b><span>Negative Mark</span></div>
-        <div class="result-card"><b>${QUESTIONS.length}</b><span>Total Questions</span></div>
+        <div class="result-card"><b>${pct.toFixed(1)}%</b><span>Percentage</span></div><div class="result-card"><b>${formatTime(timeTaken)}</b><span>Time Used</span></div><div class="result-card"><b>−0.25</b><span>Negative Mark</span></div><div class="result-card"><b>${QUESTIONS.length}</b><span>Total Questions</span></div>
       </div>
       <div class="result-actions">
+        <button class="btn next" id="previewBtn">Preview Answers</button>
         <a class="link-btn" target="_blank" rel="noopener" href="https://whatsapp.com/channel/0029Vb8OSjRIyPtadBvn7V3f">WhatsApp • Competitive</a>
         <a class="link-btn" target="_blank" rel="noopener" href="https://whatsapp.com/channel/0029VbDbZw290x2siUgnZq2i">WhatsApp • 11/12 PCMB</a>
         <a class="link-btn" target="_blank" rel="noopener" href="https://whatsapp.com/channel/0029VbCyz9O4inoubn71kZ26">WhatsApp • 9/10</a>
         <a class="link-btn" target="_blank" rel="noopener" href="https://t.me/kirtan0721">Telegram • @kirtan0721</a>
       </div>
     </section>`;
+  document.getElementById('previewBtn').onclick=renderPreview;
+}
+
+function renderPreview(){
+  main.innerHTML=`
+    <section class="preview-wrap">
+      <div class="preview-title">Answer Preview</div><div class="preview-sub">Correct answer and your response</div>
+      ${QUESTIONS.map((q,i)=>{
+        const a=answers[i]; const isCorrect=a===q.answer; const skipped=a===null;
+        const statusClass=skipped?'skipped':(isCorrect?'correct':'wrong');
+        const statusText=skipped?'Not Answered / अनुत्तरित':(isCorrect?'Correct / सही':'Wrong / गलत');
+        const yourText=skipped?'Not Answered':`${String.fromCharCode(64+a)}. ${q.options[a-1]}`;
+        const correctText=`${String.fromCharCode(64+q.answer)}. ${q.options[q.answer-1]}`;
+        return `<div class="preview-card"><div class="preview-q">Q${i+1}</div><div class="preview-en">${q.en}</div><div class="preview-hi">${q.hi}</div>
+          <div class="preview-options">${q.options.map((opt,j)=>{const n=j+1;let cls='';if(n===q.answer)cls=' correct-answer';if(n===a&&a!==q.answer)cls=' selected-wrong';return `<div class="preview-option${cls}"><strong>${String.fromCharCode(65+j)}.</strong> ${opt}${n===q.answer?' ✓':''}${n===a&&a!==q.answer?' ← Your Answer':''}</div>`}).join('')}</div>
+          <div class="ans-line ${statusClass}"><strong>${statusText}</strong><br>Your Answer: ${yourText}<br>Correct Answer: ${correctText}</div>
+        </div>`;
+      }).join('')}
+      <div style="margin:18px 0 30px"><button class="btn next" onclick="showResultView()">Back to Result</button></div>
+    </section>`;
+}
+
+function showResultView(){ showResultSnapshot(); }
+function showResultSnapshot(){
+  const attempted=answers.filter(x=>x!==null).length; const correct=answers.reduce((n,a,i)=>n+(a===QUESTIONS[i].answer?1:0),0); const wrong=answers.reduce((n,a,i)=>n+(a!==null&&a!==QUESTIONS[i].answer?1:0),0); const skipped=QUESTIONS.length-attempted; const score=correct-(wrong*NEGATIVE); const pct=Math.max(0,(score/QUESTIONS.length)*100); const timeTaken=Math.min(EXAM_SECONDS,EXAM_SECONDS-remaining);
+  main.innerHTML=`<section class="result"><h1>Test Result</h1><div style="color:#7a879d;margin-top:6px">AIIMERS CLASSES • Dir:- KIRTAN BAURI</div><div class="score"><div>Test Submitted</div><strong>${score.toFixed(2)}</strong></div><div class="result-grid"><div class="result-card"><b>${attempted}</b><span>Attempted</span></div><div class="result-card"><b>${correct}</b><span>Correct</span></div><div class="result-card"><b>${wrong}</b><span>Wrong</span></div><div class="result-card"><b>${skipped}</b><span>Unattempted</span></div></div><div class="result-grid" style="margin-top:12px"><div class="result-card"><b>${pct.toFixed(1)}%</b><span>Percentage</span></div><div class="result-card"><b>${formatTime(timeTaken)}</b><span>Time Used</span></div><div class="result-card"><b>−0.25</b><span>Negative Mark</span></div><div class="result-card"><b>${QUESTIONS.length}</b><span>Total Questions</span></div></div><div class="result-actions"><button class="btn next" onclick="renderPreview()">Preview Answers</button></div></section>`;
 }
 
 renderStart();
