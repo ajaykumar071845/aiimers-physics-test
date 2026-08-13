@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIIMERS CLASSES - Online CBT Test</title>
+    <style>
+        body { font-family: Arial, Helvetica, sans-serif; background: #eaeff1; margin: 0; padding: 0; color: #333; }
+        
+        /* Official Header */
+        .header { background: #0f2027; color: white; text-align: center; padding: 20px 10px; border-bottom: 5px solid #ffc107; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header h1 { margin: 0; font-size: 28px; font-weight: 900; letter-spacing: 1px; }
+        .header h3 { margin: 5px 0 0 0; font-size: 15px; color: #ffe082; letter-spacing: 1px; }
+        
+        .container { max-width: 1000px; margin: 25px auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); width: 92%; box-sizing: border-box; }
+        
+        /* Entry Form */
+        #login-section { text-align: center; max-width: 600px; margin: 40px auto; }
+        #login-section h2 { color: #111; margin-bottom: 10px; font-size: 24px; font-weight: bold; }
+        .subject-badge { display: inline-block; background: #e3f2fd; color: #1565c0; padding: 6px 16px; border-radius: 20px; font-weight: bold; font-size: 14px; margin-bottom: 25px; border: 1px solid #bbdefb; }
+        
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; font-weight: bold; margin-bottom: 8px; color: #444; }
+        .input-group input, .input-group select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; box-sizing: border-box; }
+        .input-group input:focus, .input-group select:focus { border-color: #0f2027; outline: none; }
+        
+        .start-btn { background: #ffc107; color: #111; border: none; padding: 15px 30px; font-size: 18px; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 15px; width: 100%; transition: 0.2s; }
+        .start-btn:hover { background: #ffb300; }
+        
+        /* Quiz Section & Layout */
+        #quiz-section { display: none; }
+        .quiz-layout { display: flex; flex-direction: column; gap: 20px; }
+        .quiz-content { flex: 1; }
+        .quiz-sidebar { background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #ddd; }
+        
+        /* Desktop Mode Split */
+        @media (min-width: 768px) {
+            .quiz-layout { flex-direction: row; }
+            .quiz-content { flex: 3; }
+            .quiz-sidebar { flex: 1; min-width: 260px; max-width: 300px; }
+        }
+        
+        /* Top Info Bar */
+        .student-info-bar { background: #f0f4f8; padding: 10px 15px; border-radius: 5px; margin-bottom: 20px; font-weight: bold; color: #0a4275; display: flex; justify-content: space-between; font-size: 14px; border: 1px solid #ccc; }
+        .info-bar { display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px; }
+        
+        /* Questions */
+        .question-text { font-size: 18px; font-weight: bold; margin-bottom: 20px; color: #111; line-height: 1.5; }
+        .option-label { display: flex; align-items: center; padding: 12px 15px; background: #fff; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; font-size: 16px; cursor: pointer; font-weight: normal; transition: 0.2s; }
+        .option-label:hover { background: #f1f1f1; }
+        .option-label input { margin-right: 12px; transform: scale(1.3); }
+        
+        /* Navigation */
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 25px; border-top: 1px solid #eee; padding-top: 20px; }
+        .btn { padding: 10px 20px; border: none; background: #0f2027; color: white; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        #submit-btn { background: #d32f2f; display: none; }
+        
+        /* Sidebar Palette */
+        .palette-title { font-size: 16px; font-weight: bold; text-align: center; margin-bottom: 15px; color: #333; border-bottom: 2px solid #ddd; padding-bottom: 8px; }
+        .palette-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; justify-items: center; }
+        .palette-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid #aaa; background: #fff; font-weight: bold; font-size: 14px; cursor: pointer; color: #333; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .palette-btn.answered { background: #27ae60; color: white; border-color: #27ae60; }
+        .palette-btn.active { box-shadow: 0 0 0 3px rgba(15, 32, 39, 0.4); border-color: #0f2027; }
+        
+        .palette-legend { margin-top: 20px; font-size: 13px; color: #555; line-height: 1.8; }
+        .legend-item { display: flex; align-items: center; gap: 8px; }
+        .box { width: 15px; height: 15px; border-radius: 3px; border: 1px solid #999; }
+        .box.ans { background: #27ae60; border-color: #27ae60; }
+        .box.unans { background: #fff; }
+
+        /* Result Section */
+        #result-section { display: none; text-align: center; }
+        .cert-card { background: #f9f9f9; border: 2px solid #ccc; border-radius: 8px; padding: 30px; margin: 20px 0; }
+        .cert-name { font-size: 24px; color: #0f2027; font-weight: bold; margin: 10px 0; text-transform: uppercase; }
+        .cert-class { font-size: 16px; color: #555; font-weight: bold; margin-bottom: 20px; }
+        .score { font-size: 45px; font-weight: bold; color: #27ae60; margin-bottom: 10px; }
+        .screenshot-msg { color: #856404; font-weight: bold; margin-top: 20px; font-size: 15px; background: #fff3cd; padding: 12px; border-radius: 5px; border: 1px solid #ffeeba; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>AIIMERS CLASSES</h1>
+        <h3>Dir:- KIRTAN BAURI</h3>
+    </div>
+
+    <!-- Login Area -->
+    <div class="container" id="login-section">
+        <h2>Online Mock Test Portal</h2>
+        <div class="subject-badge">Subject: Class 12 Physics (Current Electricity)</div>
+        
+        <div class="input-group">
+            <label>Full Name (पूरा नाम)</label>
+            <input type="text" id="studentName" placeholder="Enter your full name...">
+        </div>
+        
+        <div class="input-group">
+            <label>Class/Batch (क्लास/बैच)</label>
+            <select id="studentClass">
+                <option value="">-- Select Class --</option>
+                <option value="12th Physics (Board)">12th Physics (Board)</option>
+                <option value="12th Physics (JEE/NEET)">12th Physics (JEE/NEET)</option>
+                <option value="Competitive Batch">Competitive Batch</option>
+            </select>
+        </div>
+        
+        <button class="start-btn" onclick="startTest()">Start Test</button>
+    </div>
+
+    <!-- Quiz Area -->
+    <div class="container" id="quiz-section">
+        <div class="student-info-bar">
+            <span id="display-name">उम्मीदवार: </span>
+            <span id="display-class">क्लास: </span>
+        </div>
+        
+        <div class="quiz-layout">
+            <!-- Left: Question Area -->
+            <div class="quiz-content">
+                <div class="info-bar">
+                    <span id="q-counter">Question: 1/19</span>
+                    <span id="timer" style="color: #d32f2f;">Time Left: 08:00</span>
+                </div>
+                <div id="question-text" class="question-text"></div>
+                <div id="options-container"></div>
+                
+                <div class="nav-buttons">
+                    <button class="btn" id="prev-btn" onclick="prevQ()">Save & Previous</button>
+                    <button class="btn" id="next-btn" onclick="nextQ()">Save & Next</button>
+                    <button class="btn" id="submit-btn" onclick="submitFinal()">Final Submit</button>
+                </div>
+            </div>
+
+            <!-- Right: Status Palette -->
+            <div class="quiz-sidebar">
+                <div class="palette-title">Question Palette</div>
+                <div class="palette-grid" id="palette-grid">
+                    <!-- Buttons generated by JS -->
+                </div>
+                <div class="palette-legend">
+                    <div class="legend-item"><div class="box ans"></div> Answered</div>
+                    <div class="legend-item"><div class="box unans"></div> Not Answered</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Area -->
+    <div class="container" id="result-section">
+        <h2>Test Summary</h2>
+        <div class="cert-card">
+            <div class="cert-name" id="result-name"></div>
+            <div class="cert-class" id="result-class"></div>
+            <p style="color:#666; font-weight:bold;">SCORE OBTAINED</p>
+            <div class="score" id="final-score"></div>
+        </div>
+        <p class="screenshot-msg">📸 Take a screenshot of this result and share it in your WhatsApp/Telegram group.</p>
+    </div>
+
+<script>
+var questions = [
+    {q: "A uniform wire of resistance 16 &Omega; is cut into four equal parts and attached in parallel combination, the equivalent resistance of the combination is <br><span style='color:#1565c0; font-size:15px; font-weight:normal;'>16 &Omega; प्रतिरोध वाले एक समरूप तार को चार बराबर टुकड़ों में काटकर इन्हें समानान्तर क्रम में जोड़ दिया जाए तो संयोजन का समतुल्य प्रतिरोध होगा</span>", options: ["1 &Omega;", "4 &Omega;", "1/4 &Omega;", "1/16 &Omega;"], ans: 0},
+    {q: "Drift velocity v<sub>d</sub> varies with the intensity of electric field E as per the relation <br><span style='color:#1565c0; font-size:15px; font-weight:normal;'>अपवाह वेग v<sub>d</sub> किस संबंध के अनुसार विद्युत क्षेत्र E की तीव्रता के साथ बदलता रहता है ?</span>", options: ["v<sub>d</sub> &propto; E<sup>2</sup>", "v<sub>d</sub> &propto; 1/E", "v<sub>d</sub> &propto; &radic;E", "v<sub>d</sub> &propto; E"], ans: 3},
+    {q: "A 100 watt electric bulb is connected to a 220 volt electric source. The resistance of the bulb's filament is <br><span style='color:#1565c0; font-size:15px; font-weight:normal;'>100 वाट के विद्युत बल्ब को 220 वोल्ट के विद्युत स्रोत से जोड़ा गया है। बल्ब के तंतु का प्रतिरोध है</span>", options: ["484 &Omega;", "100 &Omega;", "22000 &Omega;", "242 &Omega;"], ans: 0},
+    {q: "The algebraic sum of all the currents at any point in an electrical circuit is <br><span style='color:#1565c0; font-size:15px; font-weight:normal;'>विद्युतीय परिपथ के किसी बिन्दु पर सभी धाराओं का बीजीय योग होता है</span>", options: ["positive / धनात्मक", "negative / ऋणात्मक", "zero / शून्य", "infinite / अनन्त"], ans: 2},
+    {q: "In a Wheatstone bridge, if the battery and galvanometer are interchanged, then the deflection in galvanometer will <br><span style='color:#1565c0; font-size:15px; font-weight:normal;'>ह्विटस्टोन सेतु में यदि बैटरी और गैल्वेनोमीटर को आपस में बदल दिया जाए तो गैल्वेनोमीटर में विक्षेपण होगा</span>", options: ["Change in previous direction", "Change in opposite direction", "Not change / परिवर्तन नहीं होगा", "None of these"], ans: 2},
+    {q: "Two copper wires of length l and 2l have radii r and 2r respectively. The ratio of their specific resistances is <br><span style='color:#1565c0; font-size:15px; font-weight:normal;'>लम्बाई l तथा 2l की ताम्बे के दो तारों की त्रिज्याएँ क्रमशः r तथा 2r हैं। इनके विशिष्ट प्रतिरोधों का अनुपात है</span>", options: ["1:2", "2:1", "1:1", "1:3"], ans: 2},
+    {q: "Kirchhoff's loop rule is a direct consequence of law of conservation of <br><span style='color:#1565c0; font-size:15px; font-weight:normal;'>किर्कहॉफ का पाश नियम किस राशि के संरक्षण के नियम की सीधी परिणति है ?</span>", options: ["Charge / आवेश", "Momentum / संवेग", "Angular momentum / कोणीय संवेग", "Energy / ऊर्जा"], ans: 3},
+    {q: "A charged particle has drift velocity 4.2 &times; 10<sup>-4</sup> ms<sup>-1</sup> in electric field of 2.1 &times; 10<sup>-10</sup> Vm<sup>-1</sup>. Its mobility is <br><span style='color:#1565c0; font-size:15px; font-weight:normal;'>विद्युत क्षेत्र 2.1 &times; 10<sup>-10</sup> Vm<sup>-1</sup> में एक आवेशित कण का अपवाह वेग 4.2 &times; 10<sup>-4</sup> ms<sup>-1</sup> है। कण की गतिशीलता का मान है</span>", options: ["0.5 &times; 10<sup>6</sup> m<sup>2</sup>V<sup>-1</sup>s<sup>-1</sup>", "2 &times; 10<sup>6</sup> m<sup>2</sup>V<sup>-1</sup>s<sup>-1</sup>", "0.5 &times; 10<sup>-6</sup> m<sup>2</sup>V<sup>-1</sup>s<sup>-1</sup>", "2 &times; 10<sup>-6</sup> m<sup>2</sup>V<sup>-1</sup>s<sup>-1</sup>"], ans: 1},
+    {q: "Ohm's law is valid when the temperature of conductor is <br><span style='color:#1565c0; font-size:15px; font-weight:normal;'>ओम का नियम तब मान्य होता है जब चालक का तापमानः</span>", options: ["very low / बहुत कम हो", "very high / बहुत अधिक हो", "varying / बदल रहा हो", "constant / स्थिर (नियत) हो"], ans: 3},
+    {q: "Why is the Wheatstone bridge more accurate than other methods of measuring resistances? <br><span style='color:#1565c0; font-size:15px; font-weight:normal;'>व्हीटस्टोन सेतु प्रतिरोध मापने की अन्य विधियों से अधिक सटीक क्यों है?</span>", options: ["It is a null method / यह एक शून्य-विक्षेप (null) विधि है", "It is based on Kirchhoff's law", "It has four resistances", "It does not involve Ohm's law"], ans: 0},
+    {q: "Kirchhoff's point rule is a direct consequence of law of conservation of <br><span style='color:#1565c0; font-size:15px; font-weight:normal;'>किर्कहाफ का संधि नियम किस भौतिक राशि के संरक्षण का प्रत्यक्ष परिणाम है ?</span>", options: ["Energy / ऊर्जा", "Linear momentum / रैखिक संवेग", "Angular momentum / कोणीय संवेग", "Charge / आवेश"], ans: 3},
+    {q: "In the series combination of two or more than two resistances <br><span style='color:#1565c0; font-size:15px; font-weight:normal;'>दो या दो से अधिक प्रतिरोधों के श्रेणीक्रम संयोजन में:</span>", options: ["the current through each resistance is same / प्रत्येक प्रतिरोध से प्रवाहित धारा समान होती है", "the voltage through each resistance is same", "neither current nor voltage is same", "both current and voltage are same"], ans: 0},
+    {q: "In parallel combination of 'n' cells, we obtain <br><span style='color:#1565c0; font-size:15px; font-weight:normal;'>'n' सेलों के समानांतर संयोजन में, हमें प्राप्त होता है:</span>", options: ["more voltage", "more electric current", "less voltage", "less electric current"], ans: 1},
+    {q: "The resistivity of alloy manganin <br><span style='color:#1565c0; font-size:15px; font-weight:normal;'>मिश्र धातु मैंगनीन की प्रतिरोधकता:</span>", options: ["is nearly independent of temperature / तापमान से लगभग स्वतंत्र होती है", "increases rapidly with increase in temperature", "decreases with increase in temperature", "increases rapidly with decrease in temperature"], ans: 0},
+    {q: "6.4 A current is flowing in a conductor. Then the number of electrons flowing per second will be <br><span style='color:#1565c0; font-size:15px; font-weight:normal;'>एक चालक में 6.4 A की धारा प्रवाहित हो रही है। प्रति सेकंड प्रवाहित होने वाले इलेक्ट्रॉनों की संख्या होगी:</span>", options: ["4 &times; 10<sup>19</sup>", "3 &times; 10<sup>19</sup>", "2 &times; 10<sup>-20</sup>", "2.5 &times; 10<sup>-20</sup>"], ans: 0},
+    {q: "A uniform wire of resistance R is cut into n equal parts. These parts are then connected in parallel with each other. The equivalent resistance of the combination is <br><span style='color:#1565c0; font-size:15px; font-weight:normal;'>प्रतिरोध R वाले एक समरूप तार को n बराबर टुकड़ों में काटकर उन्हें समान्तर क्रम में जोड़ दिया जाता है। संयोजन का समतुल्य प्रतिरोध है</span>", options: ["R/n<sup>2</sup>", "n R", "R/n", "n/R<sup>2</sup>"], ans: 0},
+    {q: "For a conductor, the relation between current density (J), conductivity (&sigma;) and electric field intensity (E) is <br><span style='color:#1565c0; font-size:15px; font-weight:normal;'>किसी चालक के लिए धारा घनत्व (J), चालकता (&sigma;) एवं विद्युत क्षेत्र की तीव्रता (E) के बीच सम्बंध है</span>", options: ["J = &sigma; / E", "J = &sigma; E", "J = E / &sigma;", "none of these"], ans: 1},
+    {q: "As temperature increases, the resistance of a conductor <br><span style='color:#1565c0; font-size:15px; font-weight:normal;'>जैसे-जैसे तापमान बढ़ता है, चालक का प्रतिरोधः</span>", options: ["remains unchanged / अपरिवर्तित रहता है", "increases / बढ़ता है", "decreases / घटता है", "none of these"], ans: 1},
+    {q: "Two cells of emf E<sub>1</sub> and E<sub>2</sub> and internal resistances r<sub>1</sub> and r<sub>2</sub> respectively are connected in parallel. Equivalent emf of the combination is <br><span style='color:#1565c0; font-size:15px; font-weight:normal;'>E<sub>1</sub> और E<sub>2</sub> विद्युत वाहक बल और क्रमशः r<sub>1</sub> और r<sub>2</sub> आंतरिक प्रतिरोध वाले दो सेल समानांतर क्रम में जुड़े हुए हैं। संयोजन का समतुल्य विद्युत वाहक बल है:</span>", options: ["(E<sub>1</sub>r<sub>2</sub> + E<sub>2</sub>r<sub>1</sub>) / (r<sub>1</sub> + r<sub>2</sub>)", "(E<sub>1</sub>r<sub>1</sub> + E<sub>2</sub>r<sub>2</sub>) / (r<sub>1</sub> + r<sub>2</sub>)", "(E<sub>1</sub> + E<sub>2</sub>) / 2", "E<sub>1</sub> + E<sub>2</sub>"], ans: 0}
+];
+
+var currentQ = 0;
+var answers = [];
+for (var a = 0; a < questions.length; a++) {
+    answers.push(-1);
+}
+var timer = 480; 
+var timerInterval;
+var studentName = "";
+var studentClass = "";
+
+function startTest() {
+    var nameInput = document.getElementById('studentName').value;
+    var classInput = document.getElementById('studentClass').value;
+    
+    if(nameInput === "" || classInput === "") {
+        alert("Please enter Name and Class to start!");
+        return;
+    }
+    
+    studentName = nameInput;
+    studentClass = classInput;
+    
+    document.getElementById('display-name').innerHTML = "Candidate: " + studentName;
+    document.getElementById('display-class').innerHTML = "Class: " + studentClass;
+    
+    document.getElementById('login-section').style.display = "none";
+    document.getElementById('quiz-section').style.display = "block";
+    
+    buildPalette();
+    loadQuestion();
+    
+    timerInterval = setInterval(function() {
+        timer--;
+        if(timer <= 0) {
+            clearInterval(timerInterval);
+            submitFinal();
+        }
+        var m = Math.floor(timer / 60);
+        var s = timer % 60;
+        var mStr = (m < 10) ? "0" + m : m;
+        var sStr = (s < 10) ? "0" + s : s;
+        document.getElementById('timer').innerHTML = "Time Left: " + mStr + ":" + sStr;
+    }, 1000);
+}
+
+function buildPalette() {
+    var html = "";
+    for(var i = 0; i < questions.length; i++) {
+        html += '<div class="palette-btn" id="pal-btn-'+i+'" onclick="jumpTo('+i+')">' + (i+1) + '</div>';
+    }
+    document.getElementById('palette-grid').innerHTML = html;
+}
+
+function updatePalette() {
+    for(var i = 0; i < questions.length; i++) {
+        var btn = document.getElementById('pal-btn-'+i);
+        if(btn) {
+            btn.className = "palette-btn";
+            if(answers[i] !== -1) {
+                btn.className += " answered";
+            }
+            if(i === currentQ) {
+                btn.className += " active";
+            }
+        }
+    }
+}
+
+function loadQuestion() {
+    document.getElementById('q-counter').innerHTML = "Question: " + (currentQ + 1) + " / " + questions.length;
+    document.getElementById('question-text').innerHTML = questions[currentQ].q;
+    
+    var html = "";
+    for(var j=0; j<4; j++) {
+        var isChecked = (answers[currentQ] === j) ? "checked" : "";
+        html += '<label class="option-label"><input type="radio" name="opt" value="'+j+'" onclick="saveAnswer('+j+')" '+isChecked+'>' + questions[currentQ].options[j] + '</label>';
+    }
+    document.getElementById('options-container').innerHTML = html;
+    
+    document.getElementById('prev-btn').disabled = (currentQ === 0);
+    
+    if(currentQ === questions.length - 1) {
+        document.getElementById('next-btn').style.display = "none";
+        document.getElementById('submit-btn').style.display = "inline-block";
+    } else {
+        document.getElementById('next-btn').style.display = "inline-block";
+        document.getElementById('submit-btn').style.display = "none";
+    }
+    
+    updatePalette();
+}
+
+function saveAnswer(idx) {
+    answers[currentQ] = idx;
+    updatePalette();
+}
+
+function nextQ() {
+    if(currentQ < questions.length - 1) { 
+        currentQ++; 
+        loadQuestion(); 
+    }
+}
+
+function prevQ() {
+    if(currentQ > 0) { 
+        currentQ--; 
+        loadQuestion(); 
+    }
+}
+
+function jumpTo(idx) {
+    currentQ = idx;
+    loadQuestion();
+}
+
+function submitFinal() {
+    clearInterval(timerInterval);
+    var score = 0;
+    for(var i=0; i<questions.length; i++) {
+        if(answers[i] === questions[i].ans) score++;
+    }
+    
+    document.getElementById('result-name').innerHTML = studentName;
+    document.getElementById('result-class').innerHTML = studentClass;
+    document.getElementById('final-score').innerHTML = score + "/" + questions.length;
+    
+    document.getElementById('quiz-section').style.display = "none";
+    document.getElementById('result-section').style.display = "block";
+}
+</script>
+</body>
+</html>
